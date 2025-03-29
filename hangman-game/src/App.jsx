@@ -1,66 +1,192 @@
-const words = [
-  { word: "eel", hint: "An electric fish" },
-  { word: "apple", hint: "A red fruit" },
-  { word: "tiger", hint: "A big striped cat" },
-];
+"use client"
 
-let selectedWord = "";
-let guessedLetters = [];
-let wrongAttempts = 0;
+import { useState, useEffect } from "react"
+import "./App.css"
 
-const hintElement = document.querySelector("#hint span");
-const wordDisplay = document.getElementById("word-display");
-const message = document.getElementById("message");
-const keyboard = document.querySelector(".keyboard");
-const restartButton = document.getElementById("restart");
-const parts = document.querySelectorAll(".part");
+// Word list
+const wordList = [
+  "javascript",
+  "react",
+  "component",
+  "function",
+  "developer",
+  "programming",
+  "interface",
+  "application",
+  "keyboard",
+  "computer",
+  "algorithm",
+  "variable",
+  "database",
+  "framework",
+  "library",
+  "responsive",
+  "frontend",
+  "backend",
+  "deployment",
+  "server",
+]
 
-// Function to start a new game
-function startGame() {
-  const randomIndex = Math.floor(Math.random() * words.length);
-  selectedWord = words[randomIndex].word;
-  guessedLetters = Array(selectedWord.length).fill("_");
-  wrongAttempts = 0;
-
-  hintElement.textContent = words[randomIndex].hint;
-  wordDisplay.textContent = guessedLetters.join(" ");
-  message.textContent = "";
-  parts.forEach((part) => (part.style.display = "none"));
-  keyboard.innerHTML = "";
-
-  // Generate the keyboard buttons
-  for (let i = 65; i <= 90; i++) {
-    const letter = String.fromCharCode(i);
-    const button = document.createElement("button");
-    button.textContent = letter;
-    button.addEventListener("click", () => handleGuess(letter));
-    keyboard.appendChild(button);
-  }
+const getRandomWord = () => {
+  const randomIndex = Math.floor(Math.random() * wordList.length)
+  return wordList[randomIndex]
 }
 
-// Function to handle letter guess
-function handleGuess(letter) {
-  if (selectedWord.includes(letter.toLowerCase())) {
-    for (let i = 0; i < selectedWord.length; i++) {
-      if (selectedWord[i] === letter.toLowerCase()) {
-        guessedLetters[i] = letter;
+// Figure Component
+const Figure = ({ wrongLetters }) => {
+  const errors = wrongLetters.length
+
+  return (
+    <div className="figure">
+      {/* Scaffold */}
+      <div className="figure-part scaffold-base"></div>
+      <div className="figure-part scaffold-vertical"></div>
+      <div className="figure-part scaffold-horizontal"></div>
+      <div className="figure-part scaffold-rope"></div>
+
+      {/* Head */}
+      {errors > 0 && <div className="figure-part head"></div>}
+
+      {/* Body */}
+      {errors > 1 && <div className="figure-part body"></div>}
+
+      {/* Arms */}
+      {errors > 2 && <div className="figure-part arm-left"></div>}
+      {errors > 3 && <div className="figure-part arm-right"></div>}
+
+      {/* Legs */}
+      {errors > 4 && <div className="figure-part leg-left"></div>}
+      {errors > 5 && <div className="figure-part leg-right"></div>}
+    </div>
+  )
+}
+
+// Word Component
+const Word = ({ word, guessedLetters, gameStatus }) => {
+  return (
+    <div className="word">
+      {word.split("").map((letter, index) => (
+        <div key={index} className="letter">
+          {guessedLetters.includes(letter) || gameStatus === "lost" ? letter : ""}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Keyboard Component
+const Keyboard = ({ guessedLetters, wrongLetters, handleGuess, disabled }) => {
+  const rows = [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    ["z", "x", "c", "v", "b", "n", "m"],
+  ]
+
+  return (
+    <div className="keyboard">
+      {rows.map((row, rowIndex) => (
+        <div key={rowIndex} className="keyboard-row">
+          {row.map((letter) => {
+            const isGuessed = guessedLetters.includes(letter)
+            const isWrong = wrongLetters.includes(letter)
+
+            let buttonClass = "key"
+            if (isGuessed) {
+              buttonClass += isWrong ? " wrong" : " correct"
+            }
+            if (disabled && !isGuessed) {
+              buttonClass += " disabled"
+            }
+
+            return (
+              <button
+                key={letter}
+                onClick={() => handleGuess(letter)}
+                disabled={isGuessed || disabled}
+                className={buttonClass}
+              >
+                {letter.toUpperCase()}
+              </button>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Main Hangman Game Component
+function App() {
+  const [word, setWord] = useState("")
+  const [guessedLetters, setGuessedLetters] = useState([])
+  const [wrongLetters, setWrongLetters] = useState([])
+  const [gameStatus, setGameStatus] = useState("playing") // 'playing', 'won', 'lost'
+
+  // Initialize game
+  useEffect(() => {
+    startNewGame()
+  }, [])
+
+  const startNewGame = () => {
+    const newWord = getRandomWord()
+    setWord(newWord)
+    setGuessedLetters([])
+    setWrongLetters([])
+    setGameStatus("playing")
+  }
+
+  const handleGuess = (letter) => {
+    if (gameStatus !== "playing" || guessedLetters.includes(letter)) {
+      return
+    }
+
+    const newGuessedLetters = [...guessedLetters, letter]
+    setGuessedLetters(newGuessedLetters)
+
+    if (!word.includes(letter)) {
+      const newWrongLetters = [...wrongLetters, letter]
+      setWrongLetters(newWrongLetters)
+
+      // Check if lost
+      if (newWrongLetters.length >= 6) {
+        setGameStatus("lost")
+      }
+    } else {
+      // Check if won
+      const isWordGuessed = word.split("").every((char) => newGuessedLetters.includes(char))
+
+      if (isWordGuessed) {
+        setGameStatus("won")
       }
     }
-    wordDisplay.textContent = guessedLetters.join(" ");
-    if (!guessedLetters.includes("_")) {
-      message.textContent = "🎉 You Won!";
-    }
-  } else {
-    parts[wrongAttempts].style.display = "block";
-    wrongAttempts++;
-    if (wrongAttempts === 6) {
-      message.textContent = `😢 You Lost! The word was "${selectedWord}".`;
-    }
   }
+
+  return (
+    <div className="app">
+      <h1>Hangman Game</h1>
+
+      <div className="game-container">
+        <Figure wrongLetters={wrongLetters} />
+
+        <Word word={word} guessedLetters={guessedLetters} gameStatus={gameStatus} />
+
+        {gameStatus === "won" && <div className="message win">Congratulations! You won!</div>}
+
+        {gameStatus === "lost" && <div className="message lose">Game Over! The word was: {word}</div>}
+
+        <Keyboard
+          guessedLetters={guessedLetters}
+          wrongLetters={wrongLetters}
+          handleGuess={handleGuess}
+          disabled={gameStatus !== "playing"}
+        />
+
+        <button onClick={startNewGame} className="new-game-btn">
+          {gameStatus === "playing" ? "New Game" : "Play Again"}
+        </button>
+      </div>
+    </div>
+  )
 }
 
-// Restart the game
-restartButton.addEventListener("click", startGame);
-
-// Start the game initially
-startGame();
+export default App
