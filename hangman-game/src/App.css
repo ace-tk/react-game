@@ -1,238 +1,73 @@
-/* General Styles */
-* {
-  box-sizing: border-box;
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 1rem;
+.container {
+  margin-top: 50px;
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
+  font-size: 2em;
   color: #333;
 }
 
-.game-container {
+.hint {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.word-display {
+  font-size: 2em;
+  letter-spacing: 5px;
+  margin: 20px;
+}
+
+.letters {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 500px;
-  width: 100%;
-}
-
-/* Figure Styles */
-.figure {
-  position: relative;
-  height: 240px;
-  width: 240px;
-}
-
-.figure-part {
-  position: absolute;
-  background-color: #333;
-}
-
-.scaffold-base {
-  width: 64px;
-  height: 4px;
-  bottom: 0;
-  left: 64px;
-}
-
-.scaffold-vertical {
-  width: 4px;
-  height: 240px;
-  left: 64px;
-}
-
-.scaffold-horizontal {
-  width: 128px;
-  height: 4px;
-  top: 0;
-  left: 64px;
-}
-
-.scaffold-rope {
-  width: 4px;
-  height: 48px;
-  top: 0;
-  right: 48px;
-}
-
-.head {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #333;
-  border-radius: 50%;
-  top: 48px;
-  right: 24px;
-  background-color: transparent;
-}
-
-.body {
-  width: 4px;
-  height: 96px;
-  top: 96px;
-  right: 48px;
-}
-
-.arm-left {
-  width: 48px;
-  height: 4px;
-  top: 112px;
-  right: 48px;
-  transform: rotate(45deg);
-}
-
-.arm-right {
-  width: 48px;
-  height: 4px;
-  top: 112px;
-  right: 4px;
-  transform: rotate(-45deg);
-}
-
-.leg-left {
-  width: 48px;
-  height: 4px;
-  top: 192px;
-  right: 48px;
-  transform: rotate(45deg);
-}
-
-.leg-right {
-  width: 48px;
-  height: 4px;
-  top: 192px;
-  right: 4px;
-  transform: rotate(-45deg);
-}
-
-/* Word Styles */
-.word {
-  display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
   justify-content: center;
-  margin: 1rem 0;
+  gap: 5px;
+  margin: 20px;
 }
 
-.letter {
-  border-bottom: 4px solid #333;
-  width: 32px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-/* Keyboard Styles */
-.keyboard {
-  width: 100%;
-  max-width: 500px;
-}
-
-.keyboard-row {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-.key {
-  width: 32px;
-  height: 40px;
-  margin: 4px;
-  border-radius: 4px;
-  background-color: #e0e0e0;
+.letter-btn {
+  background-color: #007bff;
+  color: white;
   border: none;
-  font-weight: 500;
+  padding: 10px;
+  margin: 5px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-size: 1em;
+  border-radius: 5px;
 }
 
-.key:hover:not(.disabled):not(.correct):not(.wrong) {
-  background-color: #d0d0d0;
-}
-
-.key.correct {
-  background-color: #4caf50;
-  color: white;
-}
-
-.key.wrong {
-  background-color: #f44336;
-  color: white;
-}
-
-.key.disabled {
-  opacity: 0.5;
+.letter-btn:disabled {
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
-/* Message Styles */
-.message {
-  margin: 1rem 0;
-  font-size: 1.25rem;
-  font-weight: bold;
-  text-align: center;
+.game-over {
+  color: red;
+  font-size: 1.5em;
 }
 
-.win {
-  color: #4caf50;
+.success {
+  color: green;
+  font-size: 1.5em;
 }
 
-.lose {
-  color: #f44336;
-}
-
-/* Button Styles */
-.new-game-btn {
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #2196f3;
+.restart-btn {
+  background-color: #28a745;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+  padding: 10px 20px;
+  font-size: 1em;
   cursor: pointer;
-  transition: background-color 0.2s;
+  border-radius: 5px;
+  margin-top: 20px;
 }
-
-.new-game-btn:hover {
-  background-color: #1976d2;
-}
-
-/* Responsive Styles */
-@media (max-width: 500px) {
-  .key {
-    width: 28px;
-    height: 36px;
-    margin: 2px;
-    font-size: 0.9rem;
-  }
-
-  .letter {
-    width: 24px;
-    height: 32px;
-    font-size: 1.25rem;
-  }
-}
-
